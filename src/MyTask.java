@@ -75,7 +75,7 @@ public class MyTask extends TimerTask {
 
 		//实时获得可能修改的表格内容
 		DataList = Inc.ReadMethod();
-
+		//遍历表格内容
 		for(String t: DataList) {
 			String[] inc = t.split(",");
 			if(inc.length>=3) {
