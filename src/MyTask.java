@@ -45,8 +45,8 @@ public class MyTask extends TimerTask {
 				else {
 					Test.fnum++;
 					String getInc1 = Test.inc1+","+Test.inc2+","+Test.inc3;
-					Test.outputArea.append("事件接受失败:"+Test.fnum+"\n");
-					Test.outputArea.append("事件接受失败占比:"+(double)Test.fnum/(Test.fnum+Test.snum)+"\n");
+					Test.outputArea.append("事件接收失败:"+Test.fnum+"\n");
+					Test.outputArea.append("事件接收失败占比:"+(double)Test.fnum/(Test.fnum+Test.snum)+"\n");
 					Test.outputArea.append("事件请求超时"+"\n");	
 					Test.outputArea.append("-----------------------------------"+"\n");
 					fw.append("事件请求超时"+"\r\n"+"收到部分数据："+getInc1+"\r\n");
