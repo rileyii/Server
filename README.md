@@ -24,4 +24,4 @@
 ## 使用方法  
 程序开始前：主界面
 
-![](https://github.com/rileyii/Server/blob/main/img/%E5%9B%BE%E7%89%871.png)
+![](img//%E5%9B%BE%E7%89%871.png)
