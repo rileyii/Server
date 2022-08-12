@@ -48,3 +48,4 @@
 ![](https://github.com/rileyii/Server/blob/main/img/%E5%9B%BE%E7%89%875.png)
 收到的信息和信息比对消息会出现在右边的文本栏中。开始后，无法编辑表格内容和修改端口号，可以查看历史记录和退出程序。
 此后可以查看文本栏部分，或者历史记录部分查看发送数据和表格数据的对比结果。
+![](https://github.com/rileyii/Server/blob/main/img/%E5%9B%BE%E7%89%876.png)
