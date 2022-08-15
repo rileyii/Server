@@ -22,8 +22,8 @@ public class Server2 implements Runnable {
 		int msgNum = 0;  //收到的数据信息条数
 		String getInc = ""; //得到的事件
 		try {
+			ds = new DatagramSocket(Test.RaleyNum);
 			while(true) {
-				ds = new DatagramSocket(Test.RaleyNum);
 				byte[] buffer = new byte[1024];
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 				ds.receive(packet);	
@@ -57,7 +57,6 @@ public class Server2 implements Runnable {
 								// TODO 自动生成的 catch 块
 								e.printStackTrace();
 							}
-							ds.close();
 							continue;
 						}
 					}
@@ -67,7 +66,6 @@ public class Server2 implements Runnable {
 							Test.outputArea.append("收到Raley指令："+ Test.inc2+"\n");
 
 							Test.flag2 = 1;
-							ds.close();
 							continue;
 						}
 						//两条都收到,判断与之前收到的那条不同才存入
@@ -87,7 +85,6 @@ public class Server2 implements Runnable {
 									// TODO 自动生成的 catch 块
 									e.printStackTrace();
 								}
-								ds.close();
 								continue;
 
 							}
@@ -97,7 +94,6 @@ public class Server2 implements Runnable {
 					}
 
 				}
-				ds.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

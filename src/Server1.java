@@ -19,8 +19,8 @@ public class Server1 implements Runnable {
 		try {
 			Test.outputArea.append("监听门口机服务器已启动.......\n");
 			String getInc = ""; //得到的事件
+			ds = new DatagramSocket(Test.EnNum); // 监听指定端口
 			while(true) {
-				ds = new DatagramSocket(Test.EnNum); // 监听指定端口
 				//接收的字节数组
 				// 收取到的数据存储在buffer中，由packet.getOffset(), packet.getLength()指定起始位置和长度
 				byte[] buffer = new byte[1024];
@@ -46,7 +46,6 @@ public class Server1 implements Runnable {
 					// TODO 自动生成的 catch 块
 					e.printStackTrace();
 				}
-				ds.close();
 			}
 
 		}catch (IOException e) {
