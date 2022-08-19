@@ -9,95 +9,195 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimerTask;
 
-public class MyTask extends TimerTask {
-	@Override
+//判断线程
+public class MyTask implements Runnable{
+	List<String> DataList;
+
 	public void run(){
 		try {
 			File file =new File("history.txt");
 			FileWriter fw = new FileWriter(file,true);
-			if(Test.flag==1) {
-				//三条信息都收到
-
-				if(Test.flag1==1&&Test.flag2==1&&Test.flag3==1) {
-					String getInc1 = Test.inc1+","+Test.inc2+","+Test.inc3;
-					Test.snum++;
-					Test.outputArea.append("收到完整数据："+getInc1+"\n");
-					Test.outputArea.append("事件接收成功："+Test.snum+"\n");
-					Test.outputArea.append("事件接收成功占比："+(double)Test.snum/(Test.fnum+Test.snum)+"\n");
-					fw.append("收到完整数据："+getInc1+"\r\n");
-					
-					if(isRightInc()) {
-						Test.outputArea.append("事件符合配置需求"+"\n");	
-						Test.outputArea.append("-----------------------------------"+"\n");
-						fw.append("事件符合配置需求"+"\r\n");
-						fw.append("-----------------------------------"+"\r\n");
-						clean();
-
-					}
-					else {
-						Test.outputArea.append("事件不符合配置需求"+"\n");
-						Test.outputArea.append("-----------------------------------"+"\n");
-						fw.append("事件不符合配置需求"+"\r\n");
-						fw.append("-----------------------------------"+"\r\n");
-						clean();
-					}
-				}
-				else {
-					Test.fnum++;
-					String getInc1 = Test.inc1+","+Test.inc2+","+Test.inc3;
-					Test.outputArea.append("事件接收失败:"+Test.fnum+"\n");
-					Test.outputArea.append("事件接收失败占比:"+(double)Test.fnum/(Test.fnum+Test.snum)+"\n");
-					Test.outputArea.append("事件请求超时"+"\n");	
+			//储存事件
+			DataList = new ArrayList<String>();
+			//读取表格信息
+			ReadInc Inc = new ReadInc();
+			//实时获得可能修改的表格内容
+			DataList = Inc.ReadMethod();
+			//判断线程
+			while(true) {
+				//超过开始时间到下一次循环+2s时间，判定门口机消息未按时到达，为超时状况
+				if((System.currentTimeMillis()-Test.startTime)>=(Test.reTime+2000)) {
 					Test.outputArea.append("-----------------------------------"+"\n");
-					fw.append("事件请求超时"+"\r\n"+"收到部分数据："+getInc1+"\r\n");
-					fw.append("-----------------------------------"+"\r\n");
-					clean();
+					Test.outputArea.append("门口机消息超时，未按照设定间隔时间范围内到达！"+"\n");
+					Test.outputArea.append("-----------------------------------"+"\n");
 				}
-				//告诉另外一个线程该判断已经执行过一次，另一个线程不再执行判断部分
-				Test.flag=0;
-				fw.close();
+				if(Test.os.size()>=1) {
+					//恰好收到了一条消息
+					if(Test.os.size()==1) {
+						String inc1 = Test.os.get(0);
+						long os_inc1 = Test.os_time.get(0);
+						Test.startTime = os_inc1;
+						//超过了2s进入判断
+						if((System.currentTimeMillis()-os_inc1)>=2000) {
+							//超时情况,不遍历判断，节省时间
+							if(Test.raley.size()==0) {
+								Test.outputArea.append("-----------------------------------"+"\n");
+								Test.outputArea.append("Raley消息超时未收到"+"\n");
+								Test.outputArea.append("-----------------------------------"+"\n");
+								Test.os.remove(0);
+								Test.os_time.remove(0);
+							}
+							else if(Test.raley.size()==1) {
+								//在时限内只收到一条消息(-500,2000)
+								if((Test.raley_time.get(0)-os_inc1)<=2000&&(Test.raley_time.get(0)-os_inc1)>=-500) {
+									Test.outputArea.append("-----------------------------------"+"\n");
+									Test.outputArea.append("Raley消息未收全"+"\n");
+									Test.outputArea.append("-----------------------------------"+"\n");
+									Test.raley.clear();
+									Test.raley_time.clear();
+									Test.os.remove(0);
+									Test.os_time.remove(0);
+								}
+								//此外的情况：下一次循环的Raley已经存入，不去处理该数据
+								else {
+									Test.outputArea.append("Raley消息超时未收到"+"\n");
+									Test.os.remove(0);
+									Test.os_time.remove(0);
+								}
+
+							}
+							//大于两条消息 找到时间窗口内的数据进行判断
+							else {
+								String[] raley_inc = new String[]{"","",""};
+								//遍历表格内容
+								int flag = 0;
+								for(String t: DataList) {
+									String[] inc = t.split(",");
+									if(inc[0].equals(inc1)) {
+										raley_inc[0]=inc[1];
+										raley_inc[1]=inc[2];
+										flag = 1;
+										break;
+									}
+								}
+								if(flag==0) {
+									Test.outputArea.append("-----------------------------------"+"\n");
+									Test.outputArea.append("收到门口机消息："+inc1+"，表格中未找到门口机匹配的事件"+"\n");
+									Test.outputArea.append("-----------------------------------"+"\n");
+									cleanImf(os_inc1);
+								}
+								else {
+									//得到时间范围内的raley消息
+									int time_end = -1;
+									for(int i = 0 ; i < Test.raley.size();i++) {
+										if((Test.raley_time.get(i)-os_inc1)<=2000&&(Test.raley_time.get(i)-os_inc1)>=-500) {
+											time_end = i;
+										}
+										else {
+											break;
+										}
+									}
+									//没有消息是此次对应时间窗口内的，不进行判断
+									if(time_end==-1) {
+										Test.outputArea.append("-----------------------------------"+"\n");
+										Test.outputArea.append("Raley消息超时未收到"+"\n");
+										Test.outputArea.append("-----------------------------------"+"\n");
+										Test.os.remove(0);
+										Test.os_time.remove(0);
+									}
+									//只收到一次
+									else if(time_end==0) {
+										Test.outputArea.append("-----------------------------------"+"\n");
+										Test.outputArea.append("Raley消息未收全"+"\n");
+										Test.outputArea.append("-----------------------------------"+"\n");
+										Test.raley.remove(0);
+										Test.raley_time.remove(0);
+										Test.os.remove(0);
+										Test.os_time.remove(0);
+									}
+									else{
+										//时间窗口内都包涵Raley两个数据，判定该事件完整
+										List<String> raley_inc2 = Test.raley.subList(0, time_end+1);
+										if(raley_inc2.contains(raley_inc[0])&&raley_inc2.contains(raley_inc[1])){
+											Test.outputArea.append("-----------------------------------"+"\n");
+											Test.outputArea.append("门口机："+inc1+"\n");
+											Test.outputArea.append("Raley:"+raley_inc2+"\n");
+											Test.outputArea.append("时间窗口范围内完整事件与配置相同，正确"+"\n");
+											Test.outputArea.append("-----------------------------------"+"\n");
+											Test.raley.subList(0,time_end+1).clear();//丢弃判断过的数据
+											Test.raley_time.subList(0,time_end+1).clear();
+											Test.os.remove(0);
+											Test.os_time.remove(0);
+
+										}
+										else {			
+											Test.outputArea.append("-----------------------------------"+"\n");
+											Test.outputArea.append("门口机："+inc1+"\n");
+											Test.outputArea.append("Raley:"+raley_inc2+"\n");
+											Test.outputArea.append("时间窗口范围内完整事件与配置不同，错误"+"\n");
+											Test.outputArea.append("-----------------------------------"+"\n");
+											Test.raley.subList(0,time_end+1).clear();//丢弃判断过的数据
+											Test.raley_time.subList(0,time_end+1).clear();
+											Test.os.remove(0);
+											Test.os_time.remove(0);
+										}
+									}
+
+								}
+
+							}
+						}
+					}
+				}
+				
+				//在下一次循环消息来之前，清除已判断过的数据
+				while(Test.raley.size()>0) {
+					if((System.currentTimeMillis()-Test.raley_time.get(0))>(Test.reTime-500)){
+						//时间窗口外到下一次时间窗口之间的数据判定为超时数据，丢弃不进行判断
+						Test.outputArea.append("(超时数据："+Test.raley.get(0)+")\n");
+						Test.raley_time.remove(0);
+						Test.raley.remove(0);
+					}		
+					else {
+						break;
+					}
+				}
+
+				//等待100ms再判断一次
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				}
+
 			}
+
+			
 		}catch (IOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
-		}
+
+		}	
 
 	}
-
-
-	//判断事件是否正确
-	public boolean isRightInc() {
-		//储存事件
-		List<String> DataList = new ArrayList<String>();
-
-		//读取表格信息
-		ReadInc Inc = new ReadInc();
-
-		//实时获得可能修改的表格内容
-		DataList = Inc.ReadMethod();
-		//遍历表格内容
-		for(String t: DataList) {
-			String[] inc = t.split(",");
-			if(inc.length>=3) {
-				if(Test.inc1.equals(inc[0])&&((Test.inc2.equals(inc[1])&&Test.inc3.equals(inc[2]))||((Test.inc3.equals(inc[1])&&Test.inc2.equals(inc[2]))))) 
-				{
-					return true;
-				}
+	
+	//清空时间窗口内的消息
+	public void cleanImf(long inc1) {
+		//得到时间范围内的raley消息
+		int time_end = -1;
+		for(int i = 0 ; i < Test.raley.size();i++) {
+			if((Test.raley_time.get(i)-inc1)<=2000&&(Test.raley_time.get(i)-inc1)>=-500) {
+				time_end = i;
 			}
-
+			else {
+				break;
+			}
 		}
-		return false;
-
-	}
-
-	//清空消息
-	public void clean() {
-		Test.flag1 = 0;
-		Test.flag2 = 0;
-		Test.flag3 = 0;
-		Test.inc1 = "";
-		Test.inc2 = "";
-		Test.inc3 = "";
+		Test.raley.subList(0,time_end+1).clear();//丢弃判断过的数据
+		Test.raley_time.subList(0,time_end+1).clear();
+		Test.os.remove(0);
+		Test.os_time.remove(0);
 	}
 
 }

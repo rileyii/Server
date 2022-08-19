@@ -17,7 +17,7 @@ public class Server1 implements Runnable {
 		//接受数据包
 		DatagramSocket ds;  //门口机信息
 		try {
-			Test.outputArea.append("监听门口机服务器已启动.......\n");
+			Test.outputArea.append("监听门口机服务器已启动......."+"\n");
 			String getInc = ""; //得到的事件
 			ds = new DatagramSocket(Test.EnNum); // 监听指定端口
 			while(true) {
@@ -32,20 +32,17 @@ public class Server1 implements Runnable {
 					e.printStackTrace();
 				}   
 				Test.flag = 1;
-
 				//原楼层/目的楼层
 				getInc = String.valueOf(buffer[1])+"/"+String.valueOf(buffer[4]); 
-				Test.outputArea.append("收到门口机事件："+getInc+"(源楼层/目的楼层)\n");
+				
 				Test.flag1 = 1;  //收到门口机信息
-				Test.inc1 = getInc;   //门口机发出的具体信息
-				//检查是否正确
-				Test.checkRightInc();
-				try {
-					Thread.sleep(Test.sleep_time);
-				} catch (InterruptedException e) {
-					// TODO 自动生成的 catch 块
-					e.printStackTrace();
-				}
+				Test.inc1 = getInc;   //门口机发出的具体信息	
+				
+				//存入内容和时间戳
+				
+				Test.os.add(getInc);
+				Test.os_time.add(System.currentTimeMillis());
+				Test.outputArea.append("收到门口机事件："+ getInc+"(源楼层/目的楼层)\n");
 			}
 
 		}catch (IOException e) {

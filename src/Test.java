@@ -14,8 +14,12 @@ import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 
 import javax.swing.BorderFactory;
@@ -32,9 +36,10 @@ public class Test extends JFrame implements ActionListener{
 	public static JTextArea outputArea;
 	public static long snum = 0;
 	public static long fnum = 0;
+	public static int os_num = 0;
 
 	public static long startTime;
-	public static long endTime;
+	public static long reTime;
 	
 	//信息判断变量
 	public static int flag1 = 0;
@@ -51,6 +56,10 @@ public class Test extends JFrame implements ActionListener{
 	Server2 s2 = new Server2();
 	Thread t1 = new Thread(s1);
 	Thread t2 = new Thread(s2);
+	MyTask m = new MyTask();
+	Thread t3 = new Thread(m);
+
+
 
 	private JButton editTable;
 	private JButton start;
@@ -63,6 +72,13 @@ public class Test extends JFrame implements ActionListener{
 	public static long sleep_time = 1000;
 	public static int EnNum = 16415;
 	public static int RaleyNum = 6666;
+	
+	//储存内容和时间点
+	public static List<String> os = new ArrayList<String>();
+	public static List<Long> os_time = new ArrayList<Long>();
+	public static List<String> raley = new ArrayList<String>();
+	public static List<Long> raley_time = new ArrayList<Long>();
+	
 
 	//初始化界面
 	Test(){
@@ -113,40 +129,43 @@ public class Test extends JFrame implements ActionListener{
 		j.add(start);
 		j.add(end);
 
-		//自动定位到最后一行
-		outputArea.getDocument().addDocumentListener(new DocumentListener(){
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-			}
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				outputArea.setCaretPosition(outputArea.getText().length());
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
+//		//自动定位到最后一行
+//		outputArea.getDocument().addDocumentListener(new DocumentListener(){
+//			@Override
+//			public void changedUpdate(DocumentEvent e) {
+//				// TODO Auto-generated method stub
+//			}
+//			@Override
+//			public void insertUpdate(DocumentEvent e) {
+//				// TODO Auto-generated method stub
+//				outputArea.setCaretPosition(outputArea.getText().length());
+//			}
+//			@Override
+//			public void removeUpdate(DocumentEvent e) {
+//				// TODO Auto-generated method stub
+//			}
+//		});
 
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		this.setVisible(true);
 	}
+	
 	public void actionPerformed(ActionEvent e){
 		String f = e.getActionCommand();
 		if(f == "编辑表格内容"){
 			ShowTable s = new ShowTable();
 		}
 		else if(f == "开始"){
-			String time = JOptionPane.showInputDialog("请输入门口机发送消息的间隔秒数(大于等于5s):");
+			String time = JOptionPane.showInputDialog("请输入门口机发送消息的间隔秒数(大于等于3s):");
 			if(time!=null){		
 				int t = Integer.valueOf(time);
-				if(t>=5) {
-					sleep_time = t * 1000 - 2000;
+				if(t>=3) {
 					t1.start();
 					t2.start();
+					t3.start();
+					startTime = System.currentTimeMillis();
+					reTime = t*1000;
 					//移除监听部分，开始后不允许修改端口号和表格
 					editTable.removeActionListener(this);
 					start.removeActionListener(this);
@@ -198,15 +217,16 @@ public class Test extends JFrame implements ActionListener{
 
 	}
 	
-	//只允许一个线程访问
-	public synchronized static void checkRightInc() {
-		//另一个线程未访问过时才能访问
-		if(flag==1) {
-			MyTask task = new MyTask();
-			Timer timer = new Timer("Timer");
-			timer.schedule(task,2000);
-		}
-	}
+//	//只允许一个线程访问
+//	public synchronized static void checkRightInc() {
+//		//另一个线程未访问过时才访问
+//		if(flag==1) {
+//			MyTask task = new MyTask();
+//			Timer timer = new Timer("Timer");
+//			timer.schedule(task,2000);
+//		}
+//		
+//	}
 	
 	public static void main(String[] args) {
 		//记录时间

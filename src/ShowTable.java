@@ -143,9 +143,5 @@ public class ShowTable extends JFrame implements ActionListener {
 			return true;
 		}
 	}
-	//	public static void main(String[] args) {
-	//		// TODO 自动生成的方法存根
-	//		ShowTable s = new ShowTable();
-	//	}
 
 }
