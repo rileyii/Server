@@ -207,12 +207,7 @@ public class Test extends JFrame implements ActionListener{
 			}
 		}
 		else if(f == "查看历史记录") {
-			 try {
-				openFile();
-			} catch (IOException e1) {
-				// TODO 自动生成的 catch 块
-				e1.printStackTrace();
-			}
+			ShowHistory s = new ShowHistory();
 		}
 
 	}
@@ -252,19 +247,7 @@ public class Test extends JFrame implements ActionListener{
 		Test t = new Test();
 	}
 	
-	 private static void openFile() throws IOException{
-		 File file =new File("history.txt");
-			if(!file.exists()){
-	        	try {
-					file.createNewFile();
-				} catch (IOException e1) {
-					// TODO 自动生成的 catch 块
-					e1.printStackTrace();
-				}
-	        }  
-		    Desktop.getDesktop().open(file);
-
-	 }
+	
 
 	
 }
