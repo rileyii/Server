@@ -27,7 +27,7 @@ public class MyTask implements Runnable{
 			//实时获得可能修改的表格内容
 			DataList = Inc.ReadMethod();
 			SqlHelp sh = new SqlHelp(); 
-			
+
 			while(true) {
 				//超过开始时间到下一次循环+2s时间，判定门口机消息未按时到达，为超时状况
 				if((System.currentTimeMillis()-Test.startTime)>=(Test.reTime+2000)) {
@@ -43,7 +43,7 @@ public class MyTask implements Runnable{
 						// TODO 自动生成的 catch 块
 						e.printStackTrace();
 					}
-					
+
 				}
 				if(Test.os.size()>=1) {
 					//恰好收到了一条消息
@@ -235,7 +235,7 @@ public class MyTask implements Runnable{
 						}
 					}
 				}
-				
+
 				//在下一次循环消息来之前，清除已判断过的数据
 				while(Test.raley.size()>0) {
 					if((System.currentTimeMillis()-Test.raley_time.get(0))>(Test.reTime-500)){
@@ -267,7 +267,7 @@ public class MyTask implements Runnable{
 
 			}
 
-			
+
 		}catch (IOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -275,7 +275,7 @@ public class MyTask implements Runnable{
 		}	
 
 	}
-	
+
 	//清空时间窗口内的消息
 	public void cleanImf(long inc1) {
 		//得到时间范围内的raley消息

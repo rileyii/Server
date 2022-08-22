@@ -50,7 +50,7 @@ public class ShowTable extends JFrame implements ActionListener {
 			}
 
 		}
-
+		
 		//制作显示的表格
 		String[] tbheadnames = {"门口机信息", "Raley呼梯", "Raley授权"};
 		model = new MytableModel(rinfo, tbheadnames);

@@ -63,7 +63,6 @@ public class Test extends JFrame implements ActionListener{
 
 	private JButton editTable;
 	private JButton start;
-	private JButton stop;
 	private JButton end;
 	private JButton changeEN;
 	private JButton changeRaley;
@@ -129,22 +128,22 @@ public class Test extends JFrame implements ActionListener{
 		j.add(start);
 		j.add(end);
 
-//		//自动定位到最后一行
-//		outputArea.getDocument().addDocumentListener(new DocumentListener(){
-//			@Override
-//			public void changedUpdate(DocumentEvent e) {
-//				// TODO Auto-generated method stub
-//			}
-//			@Override
-//			public void insertUpdate(DocumentEvent e) {
-//				// TODO Auto-generated method stub
-//				outputArea.setCaretPosition(outputArea.getText().length());
-//			}
-//			@Override
-//			public void removeUpdate(DocumentEvent e) {
-//				// TODO Auto-generated method stub
-//			}
-//		});
+		//自动定位到最后一行
+		outputArea.getDocument().addDocumentListener(new DocumentListener(){
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				outputArea.setCaretPosition(outputArea.getText().length());
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+			}
+		});
 
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -173,7 +172,7 @@ public class Test extends JFrame implements ActionListener{
 					changeRaley.removeActionListener(this);;
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "时间需大于等于5s");
+					JOptionPane.showMessageDialog(null, "时间需大于等于3s");
 				}
 			}
 
@@ -212,38 +211,8 @@ public class Test extends JFrame implements ActionListener{
 
 	}
 	
-//	//只允许一个线程访问
-//	public synchronized static void checkRightInc() {
-//		//另一个线程未访问过时才访问
-//		if(flag==1) {
-//			MyTask task = new MyTask();
-//			Timer timer = new Timer("Timer");
-//			timer.schedule(task,2000);
-//		}
-//		
-//	}
 	
 	public static void main(String[] args) {
-		//记录时间
-		File file =new File("history.txt");
-		if(!file.exists()){
-        	try {
-				file.createNewFile();
-			} catch (IOException e1) {
-				// TODO 自动生成的 catch 块
-				e1.printStackTrace();
-			}
-        }  
-		try {
-			FileWriter fw = new FileWriter(file,true);
-			Date date = new Date();
-			SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-			fw.append("\r\n"+"\r\n"+dateFormat.format(date)+"\r\n");
-			fw.close();
-		} catch (IOException e1) {
-			// TODO 自动生成的 catch 块
-			e1.printStackTrace();
-		}
 		Test t = new Test();
 	}
 	
