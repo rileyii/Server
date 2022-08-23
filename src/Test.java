@@ -34,8 +34,6 @@ import javax.swing.event.DocumentListener;
 
 public class Test extends JFrame implements ActionListener{
 	public static JTextArea outputArea;
-	public static long snum = 0;
-	public static long fnum = 0;
 	public static int os_num = 0;
 
 	public static long startTime;
@@ -45,7 +43,6 @@ public class Test extends JFrame implements ActionListener{
 	public static int flag1 = 0;
 	public static int flag2 = 0;
 	public static int flag3 = 0;
-	public static int flag = 1;
 
 	//信息内容交互
 	public static String inc1 = "";

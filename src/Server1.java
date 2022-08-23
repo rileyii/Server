@@ -31,15 +31,12 @@ public class Server1 implements Runnable {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}   
-				Test.flag = 1;
 				//原楼层/目的楼层
-				getInc = String.valueOf(buffer[1])+"/"+String.valueOf(buffer[4]); 
-				
+				getInc = String.valueOf(buffer[1])+"/"+String.valueOf(buffer[4]); 				
 				Test.flag1 = 1;  //收到门口机信息
 				Test.inc1 = getInc;   //门口机发出的具体信息	
 				
-				//存入内容和时间戳
-				
+				//存入内容和时间戳			
 				Test.os.add(getInc);
 				Test.os_time.add(System.currentTimeMillis());
 				Test.outputArea.append("收到门口机事件："+ getInc+"(源楼层/目的楼层)\n");

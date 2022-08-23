@@ -45,6 +45,7 @@ public class MyTask implements Runnable{
 					}
 
 				}
+				
 				if(Test.os.size()>=1) {
 					//恰好收到了一条消息
 					if(Test.os.size()==1) {
